@@ -1,9 +1,9 @@
 <?php
 
 // set http header
-require '../../../core/header.php';
+require '../../../../core/header.php';
 // use needed functions
-require '../../../core/functions.php';
+require '../../../../core/functions.php';
 
 // get payload from frontend
 $body = file_get_contents("php://input");

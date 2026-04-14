@@ -11,7 +11,7 @@ function App() {
       <StoreProvider>
         <Router>
           <Routes>
-            {routesDeveloper.map(({ routesProps }, key) => {
+            {routesDeveloper.map(({ ...routesProps }, key) => {
               return <Route key={key} {...routesProps} />;
             })}
           <Route path="*" element={<>page not found.</>} />

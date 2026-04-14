@@ -1,21 +1,21 @@
 import React from "react";
-import Header from "../../partials/Header"; 
+import Header from "../../partials/Header";
 import { navList } from "../nav-functions";
 import Navigation from "../../partials/Navigation";
 
 const Layout = ({ children, menu, submenu }) => {
   return (
     <>
-        {/* HEADER */}
-        <Header />
-        
-        {/* NAVIGATION */}
-        <Navigation menu={menu} submenu={submenu} navigationList={navList} />
+      {/* HEADER */}
+      <Header />
 
-        {/* BODY */}
-        {children}
+      {/* NAVIGATION */}
+      <Navigation menu={menu} submenu={submenu} navigationList={navList} />
 
-        {/* FOOTER */}
+      {/* BODY */}
+      <div className="wrapper">{children}</div>
+
+      {/* FOOTER */}
     </>
   );
 };

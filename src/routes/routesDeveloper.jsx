@@ -3,9 +3,15 @@ import Roles from "../pages/developer/settings/roles/Roles";
 
 export const routesDeveloper = [
   {
-    routesProps: {
-      path: `${devNavUrl}/${urlDeveloper}`,
-      element: <Roles />,
-    },
+    path: `${devNavUrl}/${urlDeveloper}/`,
+    element: <></>,
+  },
+  {
+    path: `${devNavUrl}/${urlDeveloper}/settings/users/roles`,
+    element: (
+      <>
+        <Roles />
+      </>
+    ),
   },
 ];
