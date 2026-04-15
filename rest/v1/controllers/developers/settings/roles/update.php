@@ -5,12 +5,18 @@ $conn = checkDbConnection($conn);
 // make use of classes for 
 $val = new Roles($conn);
 
-$val->role_is_active = 1;
+if(array_key_exists("id", $_GET)){
+$val->role_aid = $_GET['id'];
 $val->role_name = $data['role_name'];
 $val->role_description = $data['role_description'];
-$val->role_created = date("Y-m-d H:i:s");
 $val->role_updated = date("Y-m-d H:i:s");
 
-$query = checkCreate($val);
+checkId($val->role_aid);
+
+$query = checkUpdate($val);
 http_response_code(200);
-returnSuccess($val, "Roles Create", $query);
+returnSuccess($val, "Roles Update", $query);
+
+}
+
+checkEndpoint();

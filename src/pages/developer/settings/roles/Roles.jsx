@@ -18,24 +18,27 @@ const Roles = () => {
   return (
     <>
       <Layout menu="settings" submenu="roles">
-
         {/* PAGE HEADER */}
         <div className="flex items-center justify-between w-full">
           <h1>Roles</h1>
           <div>
-            <button type="button" className="flex items-center gap-1" onClick={handleAdd}>
-              <FaPlus className="text-primary"/>
+            <button
+              type="button"
+              className="flex items-center gap-1"
+              onClick={handleAdd}
+            >
+              <FaPlus className="text-primary" />
               Add
             </button>
           </div>
         </div>
         {/* PAGE CONTENT */}
         <div>
-          <RolesList />
+          <RolesList setItemEdit={setItemEdit} />
         </div>
       </Layout>
 
-      {store.isAdd && <ModalAddRoles itemEdit={itemEdit}/>}
+      {store.isAdd && <ModalAddRoles itemEdit={itemEdit} />}
     </>
   );
 };

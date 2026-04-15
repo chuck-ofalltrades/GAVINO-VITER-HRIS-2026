@@ -15,35 +15,38 @@ const ModalAddRoles = ({itemEdit}) => {
     const {store, dispatch} = React.useContext(StoreContext);
 
     const queryClient = useQueryClient();
-    const mutation = useMutation ({
-        mutationFn: (values) => 
-            queryData (
-                itemEdit 
-                ?
-                `${apiVersion}/controllers/developers/settings/roles/roles.php` : `${apiVersion}/controllers/developers/settings/roles/roles.php`,
-                itemEdit ? "put" : // put if update a record
-                 "post", // post if create a record
-                values,
-            ),
-            onSuccess: (data) => {
-                queryClient.invalidateQueries({queryKey: "roles"});
+    const mutation = useMutation({
+      mutationFn: (values) =>
+        queryData(
+          itemEdit
+            ? `${apiVersion}/controllers/developers/settings/roles/roles.php?id=${itemEdit.role_aid}`
+            : `${apiVersion}/controllers/developers/settings/roles/roles.php`,
+          itemEdit
+            ? "put" // put if update a record
+            : "post", // post if create a record
+          values,
+        ),
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["roles"] });
 
-                if(data.success) {
-                    dispatch(setSuccess(true));
-                    dispatch(setMessage(`Successfully ${itemEdit ? "updated" : "added"}`));
-                    dispatch(setIsAdd(false));
-                }
-                if(data.success == false) {
-                    dispatch(setError(true));
-                    dispatch(setMessage(data.error));
-                }
-            },
+        if (data.success) {
+          dispatch(setSuccess(true));
+          dispatch(
+            setMessage(`Successfully ${itemEdit ? "updated" : "added"}`),
+          );
+          dispatch(setIsAdd(false));
+        }
+        if (data.success == false) {
+          dispatch(setError(true));
+          dispatch(setMessage(data.error));
+        }
+      },
     });
 
     const initVal = {
-        ...itemEdit,
-        role_name: "",
-        role_description: "",
+      ...itemEdit,
+      role_name: itemEdit ? itemEdit.role_name : "",
+      role_description: itemEdit ? itemEdit.role_description : "",
     };
 
     const yupSchema = Yup.object({
