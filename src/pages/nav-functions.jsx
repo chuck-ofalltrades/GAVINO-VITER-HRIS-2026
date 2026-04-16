@@ -7,14 +7,14 @@ export const navList = [
         label: "Dashboard",
         icon: <MdDashboard />,
         menu: "dashboard",
-        path: `${devNavUrl}/dashboard`,
+        path: `${devNavUrl}/${urlDeveloper}/dashboard`,
         submenu: "",
     },
     {
         label: "Employees",
         icon: <FaUsers />,
         menu: "employees",
-        path: `${devNavUrl}/employees`,
+        path: `${devNavUrl}/${urlDeveloper}/employees`,
         submenu: "",
     },
     {
