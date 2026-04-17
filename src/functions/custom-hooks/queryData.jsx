@@ -6,6 +6,7 @@ export const queryData = (endpoint, method = "get", fd = {}) => {
   let password = "";
   let auth = btoa(`${username}:${password}`);
   var myHeaders = new Headers();
+  console.log(auth);
   myHeaders.append("Authorization", "Basic " + auth);
   myHeaders.append("Content-Type", "application/json");
 

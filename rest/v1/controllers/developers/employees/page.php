@@ -16,30 +16,29 @@ $body = file_get_contents("php://input");
 $data = json_decode($body, true);
 
 if(isset($_SERVER['HTTP_AUTHORIZATION'])){
-    if(array)
-}
 
-if(array_key_exists('start',$_GET)){
-    // check data if exist and data is required
-    checkPayLoad($data);
-    $val->start = $_GET['start'];
-    $val->total = 10;
-    $val->employee_is_active = $data['filterData'];
-    $val->search = $data['searchValue'];
-
-    // validation
-    checkLimitId($val->start, $val->total);
-
-    $query = checkReadLimit($val);
-    $total_result = checkReadAll($val);
-    http_response_code(200);
-    checkReadQuery(
-        $query,
-        $total_result,
-        $val->total,
-        $val->start
-    );
+    if(array_key_exists('start',$_GET)){
+        // check data if exist and data is required
+        checkPayLoad($data);
+        $val->start = $_GET['start'];
+        $val->total = 10;
+        $val->employee_is_active = $data['filterData'];
+        $val->search = $data['searchValue'];
+    
+        // validation
+        checkLimitId($val->start, $val->total);
+    
+        $query = checkReadLimit($val);
+        $total_result = checkReadAll($val);
+        http_response_code(200);
+        checkReadQuery(
+            $query,
+            $total_result,
+            $val->total,
+            $val->start
+        );
+    }
 }
 
 // return 404 if endpoint not available
-checckEndpoint();
+checkEndpoint();

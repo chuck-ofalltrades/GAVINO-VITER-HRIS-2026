@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import { StoreContext } from "../../../store/StoreContext";
 import * as Yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -13,10 +13,7 @@ import { queryData } from "../../../functions/custom-hooks/queryData";
 import ModalWrapperSide from "../../../partials/modals/ModalWrapperSide";
 import { FaTimes } from "react-icons/fa";
 import { Form, Formik } from "formik";
-import {
-  InputText,
-  InputTextArea,
-} from "../../../components/form-input/FormInputs";
+import { InputText } from "../../../components/form-input/FormInputs";
 import ButtonSpinner from "../../../partials/spinners/ButtonSpinner";
 import MessageError from "../../../partials/MessageError";
 
@@ -30,9 +27,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
         itemEdit
           ? `${apiVersion}/controllers/developers/employees/employees.php?id=${itemEdit.employee_aid}`
           : `${apiVersion}/controllers/developers/employees/employees.php`,
-        itemEdit
-          ? "put" // put if update a record
-          : "post", // post if create a record
+        itemEdit ? "put" : "post",
         values,
       ),
     onSuccess: (data) => {
@@ -53,12 +48,19 @@ const ModalAddEmployees = ({ itemEdit }) => {
   const initVal = {
     ...itemEdit,
     employee_first_name: itemEdit ? itemEdit.employee_first_name : "",
+    employee_middle_name: itemEdit ? itemEdit.employee_middle_name : "",
+    employee_last_name: itemEdit ? itemEdit.employee_last_name : "",
     employee_email: itemEdit ? itemEdit.employee_email : "",
-    employee_first_name_old: itemEdit ? itemEdit.employee_first_name : "",
   };
 
   const yupSchema = Yup.object({
     employee_first_name: Yup.string().trim().required("required."),
+    employee_middle_name: Yup.string().trim(),
+    employee_last_name: Yup.string().trim().required("required."),
+    employee_email: Yup.string()
+      .trim()
+      .email("Invalid email.")
+      .required("required."),
   });
 
   const handleClose = () => {
@@ -75,7 +77,6 @@ const ModalAddEmployees = ({ itemEdit }) => {
         handleClose={handleClose}
         className="transition-all ease-in-out transform duration-200"
       >
-        {/* HEADER */}
         <div className="modal-header relative mb-4">
           <h3 className="text-dark text-sm">
             {itemEdit ? "Update" : "Add"} Employee
@@ -88,12 +89,13 @@ const ModalAddEmployees = ({ itemEdit }) => {
             <FaTimes />
           </button>
         </div>
-        {/* BODY */}
+
         <div className="modal-body">
           <Formik
             initialValues={initVal}
+            enableReinitialize={true}
             validationSchema={yupSchema}
-            onSubmit={async (values, { setSubmitting, resetForm }) => {
+            onSubmit={async (values) => {
               dispatch(setError(false));
               mutation.mutate(values);
             }}
@@ -105,23 +107,43 @@ const ModalAddEmployees = ({ itemEdit }) => {
                     <div className="modal-container">
                       <div className="relative mb-6">
                         <InputText
-                          label="Name"
+                          label="First Name"
                           name="employee_first_name"
                           type="text"
                           disabled={mutation.isPending}
                         />
                       </div>
+
                       <div className="relative mb-6">
-                        <InputTextArea
-                          label="Description"
-                          name="employee_email"
+                        <InputText
+                          label="Middle Name"
+                          name="employee_middle_name"
                           type="text"
+                          disabled={mutation.isPending}
+                        />
+                      </div>
+
+                      <div className="relative mb-6">
+                        <InputText
+                          label="Last Name"
+                          name="employee_last_name"
+                          type="text"
+                          disabled={mutation.isPending}
+                        />
+                      </div>
+
+                      <div className="relative mb-6">
+                        <InputText
+                          label="Email"
+                          name="employee_email"
+                          type="email"
                           disabled={mutation.isPending}
                         />
                       </div>
 
                       {store.error && <MessageError />}
                     </div>
+
                     <div className="modal-action">
                       <button
                         type="submit"
@@ -136,6 +158,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
                           "Add"
                         )}
                       </button>
+
                       <button
                         type="reset"
                         className="btn-modal-cancel"

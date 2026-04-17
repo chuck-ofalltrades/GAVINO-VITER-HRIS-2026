@@ -11,7 +11,6 @@ require '../../../models/developers/employees/Employees.php';
 $body = file_get_contents("php://input");
 $data = json_decode($body, true);
 
-
 // create or post
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    $result = require 'create.php';
@@ -21,7 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // READ / GET
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-   $result = require 'page.php';
+   if(array_key_exists('start', $_GET)){
+      $result = require 'page.php';
+   } else {
+      $result = require 'read.php';
+   }
    sendResponse($result);
    exit;
 }

@@ -31,4 +31,4 @@ if(array_key_exists('id',$_GET)){
 }
 
 // return 404 if endpoint not available
-checckEndpoint();
+checkEndpoint();

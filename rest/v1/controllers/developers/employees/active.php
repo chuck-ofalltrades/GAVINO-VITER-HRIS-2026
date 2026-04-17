@@ -5,24 +5,26 @@ require '../../../core/header.php';
 require '../../../core/functions.php';
 // use models
 require '../../../models/developers/employees/Employees.php';
+
 // check database connection
 $conn = null;
 $conn = checkDbConnection($conn);
+
 // make use of classes for 
-// store models into var
 $val = new Employees($conn);
+
 // get payload from frontend
 $body = file_get_contents("php://input");
 $data = json_decode($body, true);
 
-if(array_key_exists('id',$_GET)){
+if(array_key_exists('id', $_GET)){
     // check data if exist and data is required
     checkPayLoad($data);
     $val->employee_aid = $_GET['id'];
     $val->employee_is_active = trim($data['isActive']);
-    $val->employee_updated = date("Y-m-d H:m:s");
+    $val->employee_updated = date("Y-m-d H:i:s");
 
-    // validate is id
+    // validate id
     checkId($val->employee_aid);
 
     $query = checkActive($val);
@@ -31,4 +33,4 @@ if(array_key_exists('id',$_GET)){
 }
 
 // return 404 if endpoint not available
-checckEndpoint();
+checkEndpoint();
