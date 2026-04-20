@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(E_ALL);
+
 header("Content-Type: application/json; charset=UTF-8");
 // header('WWW-Authenticate: Basic realm="Protected zone"');
 header("Access-Control-Allow-Origin: *");
