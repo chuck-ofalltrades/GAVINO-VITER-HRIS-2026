@@ -1,6 +1,5 @@
 import React from "react";
 import { FaArchive, FaEdit, FaTrash, FaTrashRestore } from "react-icons/fa";
-import useQueryData from "../../../../functions/custom-hooks/useQueryData";
 import {
   apiVersion,
   formatDate,
@@ -135,10 +134,10 @@ const UsersList = ({ itemEdit, setItemEdit }) => {
               <th>Role</th>
               <th>Created</th>
               <th>Updated</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            {/* LOADING SCREEN FOR FIRST PAGE LOAD */}
             {!error &&
               (status == "pending" || result?.pages[0]?.count == 0) && (
                 <tr>
@@ -151,7 +150,7 @@ const UsersList = ({ itemEdit, setItemEdit }) => {
                   </td>
                 </tr>
               )}
-            {/* IF REQUEST API FAILED */}
+
             {error && (
               <tr>
                 <td colSpan="100%" className="p-10">
@@ -159,7 +158,7 @@ const UsersList = ({ itemEdit, setItemEdit }) => {
                 </td>
               </tr>
             )}
-            {/* IF REQUEST API SUCCESS AND DATA EXIST THEN SHOW */}
+
             {result?.pages.map((pages, key) => (
               <React.Fragment key={key}>
                 {pages?.data.map((item, key) => {
@@ -180,6 +179,49 @@ const UsersList = ({ itemEdit, setItemEdit }) => {
                       <td>{item.role_name}</td>
                       <td>{formatDate(item.users_created)}</td>
                       <td>{formatDate(item.users_updated)}</td>
+                      <td>
+                        <div>
+                          {item.users_is_active == 1 ? (
+                            <>
+                              <button
+                                type="button"
+                                className="tooltip-action-table"
+                                data-tooltip="Edit"
+                                onClick={() => handleEdit(item)}
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                type="button"
+                                className="tooltip-action-table"
+                                data-tooltip="Archive"
+                                onClick={() => handleArchive(item)}
+                              >
+                                <FaArchive />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                className="tooltip-action-table"
+                                data-tooltip="Restore"
+                                onClick={() => handleRestore(item)}
+                              >
+                                <FaTrashRestore />
+                              </button>
+                              <button
+                                type="button"
+                                className="tooltip-action-table"
+                                data-tooltip="Delete"
+                                onClick={() => handleDelete(item)}
+                              >
+                                <FaTrash />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -187,6 +229,7 @@ const UsersList = ({ itemEdit, setItemEdit }) => {
             ))}
           </tbody>
         </table>
+
         <div className="loadmore flex justify-center flex-col items-center pb-10">
           <Loadmore
             fetchNextPage={fetchNextPage}
@@ -200,6 +243,39 @@ const UsersList = ({ itemEdit, setItemEdit }) => {
           />
         </div>
       </div>
+
+      {store.isArchive && (
+        <ModalArchive
+          mysqlApiArchive={`${apiVersion}/controllers/developers/settings/users/active.php?id=${itemEdit.users_aid}`}
+          msg="Are you sure you want to archive this record?"
+          successMsg="Successfully Archived."
+          item={`${itemEdit.users_first_name} ${itemEdit.users_last_name}`}
+          dataItem={itemEdit}
+          queryKey="users"
+        />
+      )}
+
+      {store.isRestore && (
+        <ModalRestore
+          mysqlApiRestore={`${apiVersion}/controllers/developers/settings/users/active.php?id=${itemEdit.users_aid}`}
+          msg="Are you sure you want to restore this record?"
+          successMsg="Successfully Restored."
+          item={`${itemEdit.users_first_name} ${itemEdit.users_last_name}`}
+          dataItem={itemEdit}
+          queryKey="users"
+        />
+      )}
+
+      {store.isDelete && (
+        <ModalDelete
+          mysqlApiDelete={`${apiVersion}/controllers/developers/settings/users/users.php?id=${itemEdit.users_aid}`}
+          msg="Are you sure you want to delete this record?"
+          successMsg="Successfully Deleted."
+          item={`${itemEdit.users_first_name} ${itemEdit.users_last_name}`}
+          dataItem={itemEdit}
+          queryKey="users"
+        />
+      )}
     </>
   );
 };

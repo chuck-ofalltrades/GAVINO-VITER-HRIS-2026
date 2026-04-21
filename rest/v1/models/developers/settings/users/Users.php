@@ -73,15 +73,14 @@ class Users {
 
     public function readAll() {
         try {
-            // JOINING TABLE
             $sql = "select ";
             $sql .= " * ";
             $sql .= " from {$this->tblSettingsUsers} as users, ";
             $sql .= " {$this->tblSettingsRoles} as roles ";
             $sql .= " where users.users_role_id = roles.role_aid ";
-            // FILTER
-            $sql .= $this->users_is_active != "" ? " and users.users_is_active = :users_is_active " : " " ;
-            // SEARCH
+
+            $sql .= $this->users_is_active != "" ? " and users.users_is_active = :users_is_active " : " ";
+
             $sql .= $this->search != "" ? " and ( " : " ";
             $sql .= $this->search != "" ? " users.users_first_name like :users_first_name " : " ";
             $sql .= $this->search != "" ? " or users.users_last_name like :users_last_name " : " ";
@@ -89,11 +88,10 @@ class Users {
             $sql .= $this->search != "" ? " or CONCAT(users.users_last_name, ' ', users.users_first_name) like :users_last_fullname " : " ";
             $sql .= $this->search != "" ? " or CONCAT(users.users_first_name, ' ', users.users_last_name) like :users_first_fullname " : " ";
             $sql .= $this->search != "" ? " ) " : " ";
+
             $query = $this->connection->prepare($sql);
             $query->execute([
-                // for filter
                 ...$this->users_is_active != '' ? ["users_is_active" => $this->users_is_active] : [],
-                // for searching
                 ...$this->search != '' ? [
                     "users_first_name" => "%{$this->search}%",
                     "users_last_name" => "%{$this->search}%",
@@ -106,19 +104,20 @@ class Users {
             returnError($e);
             $query = false;
         }
+
         return $query;
     }
+
     public function readLimit() {
         try {
-            // JOINING TABLE
             $sql = "select ";
             $sql .= " * ";
             $sql .= " from {$this->tblSettingsUsers} as users, ";
             $sql .= " {$this->tblSettingsRoles} as roles ";
             $sql .= " where users.users_role_id = roles.role_aid ";
-            // FILTER
-            $sql .= $this->users_is_active != "" ? " and users.users_is_active = :users_is_active " : " " ;
-            // SEARCH
+
+            $sql .= $this->users_is_active != "" ? " and users.users_is_active = :users_is_active " : " ";
+
             $sql .= $this->search != "" ? " and ( " : " ";
             $sql .= $this->search != "" ? " users.users_first_name like :users_first_name " : " ";
             $sql .= $this->search != "" ? " or users.users_last_name like :users_last_name " : " ";
@@ -126,14 +125,12 @@ class Users {
             $sql .= $this->search != "" ? " or CONCAT(users.users_last_name, ' ', users.users_first_name) like :users_last_fullname " : " ";
             $sql .= $this->search != "" ? " or CONCAT(users.users_first_name, ' ', users.users_last_name) like :users_first_fullname " : " ";
             $sql .= $this->search != "" ? " ) " : " ";
-            //  PAGINATION like facebook scrolling
-            $sql .= " limit :start, ";
-            $sql .= " :total ";
+
+            $sql .= " limit :start, :total ";
+
             $query = $this->connection->prepare($sql);
             $query->execute([
-                // for filter
                 ...$this->users_is_active != '' ? ["users_is_active" => $this->users_is_active] : [],
-                // for searching
                 ...$this->search != '' ? [
                     "users_first_name" => "%{$this->search}%",
                     "users_last_name" => "%{$this->search}%",
@@ -141,28 +138,33 @@ class Users {
                     "users_last_fullname" => "%{$this->search}%",
                     "users_first_fullname" => "%{$this->search}%"
                 ] : [],
-                // for pagination
-                "start" => $this->start - 1, // minus 1 because of mysql limit starts with 0
+                "start" => $this->start - 1,
                 "total" => $this->total,
             ]);
         } catch (PDOException $e) {
+            returnError($e);
             $query = false;
         }
+
         return $query;
     }
 
     public function update() {
         try {
-            $sql = "update {$this->tblSettingsRoles} set ";
+            $sql = "update {$this->tblSettingsUsers} set ";
             $sql .= "users_first_name = :users_first_name, ";
-            $sql .= "users_description = :users_description, ";
+            $sql .= "users_last_name = :users_last_name, ";
+            $sql .= "users_email = :users_email, ";
+            $sql .= "users_role_id = :users_role_id, ";
             $sql .= "users_updated = :users_updated ";
             $sql .= "where users_aid = :users_aid";
 
             $query = $this->connection->prepare($sql);
             $query->execute([
                 "users_first_name" => $this->users_first_name,
-                "users_description" => $this->users_description,
+                "users_last_name" => $this->users_last_name,
+                "users_email" => $this->users_email,
+                "users_role_id" => $this->users_role_id,
                 "users_updated" => $this->users_updated,
                 "users_aid" => $this->users_aid
             ]);
@@ -170,12 +172,13 @@ class Users {
             returnError($e);
             $query = false;
         }
+
         return $query;
     }
 
     public function active() {
         try {
-            $sql = "update {$this->tblSettingsRoles} set ";
+            $sql = "update {$this->tblSettingsUsers} set ";
             $sql .= "users_is_active = :users_is_active, ";
             $sql .= "users_updated = :users_updated ";
             $sql .= "where users_aid = :users_aid";
@@ -187,15 +190,16 @@ class Users {
                 "users_aid" => $this->users_aid
             ]);
         } catch (PDOException $e) {
-            // returnError($e); // used for debugging
+            returnError($e);
             $query = false;
         }
+
         return $query;
     }
 
     public function delete() {
         try {
-            $sql = "delete from {$this->tblSettingsRoles} ";
+            $sql = "delete from {$this->tblSettingsUsers} ";
             $sql .= "where users_aid = :users_aid";
 
             $query = $this->connection->prepare($sql);
@@ -203,25 +207,29 @@ class Users {
                 "users_aid" => $this->users_aid
             ]);
         } catch (PDOException $e) {
-            // returnError($e); // used for debugging
+            returnError($e);
             $query = false;
         }
+
         return $query;
     }
 
-        public function checkName() {
+    public function checkName() {
         try {
             $sql = "select ";
-            $sql .= "users_first_name";
-            $sql .= " from {$this->tblSettingsRoles} ";
-            $sql .= "where users_first_name = :users_first_name ";
+            $sql .= "users_email ";
+            $sql .= "from {$this->tblSettingsUsers} ";
+            $sql .= "where users_email = :users_email ";
+
             $query = $this->connection->prepare($sql);
             $query->execute([
-                "users_first_name" => $this->users_first_name, 
+                "users_email" => $this->users_email,
             ]);
         } catch (PDOException $e) {
+            returnError($e);
             $query = false;
         }
+
         return $query;
     }
 }
