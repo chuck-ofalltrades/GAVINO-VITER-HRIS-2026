@@ -138,6 +138,13 @@ export const setIsMemoOpen = (val) => {
   };
 };
 
+export const setIsView = (val) => {
+  return {
+    type: "IS_VIEW",
+    payload: val,
+  };
+};
+
 export const setIsViewImage = (val) => {
   return {
     type: "IS_VIEW_IMAGE",

@@ -10,6 +10,7 @@ const initVal = {
   isDelete: false,
   isRestore: false,
   isAdd: false,
+  isView: false,
   isSearch: false,
   isCreatePassSuccess: false,
   isForgotPassSuccess: false,
