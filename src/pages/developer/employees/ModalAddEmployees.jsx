@@ -1,7 +1,7 @@
 import React from "react";
 import { StoreContext } from "../../../store/StoreContext";
 import * as Yup from "yup";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiVersion } from "../../../functions/functions-general";
 import {
   setError,
@@ -12,13 +12,23 @@ import {
 import { queryData } from "../../../functions/custom-hooks/queryData";
 import ModalWrapperSide from "../../../partials/modals/ModalWrapperSide";
 import { FaTimes } from "react-icons/fa";
-import { Form, Formik } from "formik";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import { InputText } from "../../../components/form-input/FormInputs";
 import ButtonSpinner from "../../../partials/spinners/ButtonSpinner";
 import MessageError from "../../../partials/MessageError";
 
 const ModalAddEmployees = ({ itemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
+
+  const { data: departmentData } = useQuery({
+    queryKey: ["department-active"],
+    queryFn: async () =>
+      await queryData(
+        `${apiVersion}/controllers/developers/settings/department/department.php`,
+        "get",
+      ),
+    refetchOnWindowFocus: false,
+  });
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
@@ -51,6 +61,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
     employee_middle_name: itemEdit ? itemEdit.employee_middle_name : "",
     employee_last_name: itemEdit ? itemEdit.employee_last_name : "",
     employee_email: itemEdit ? itemEdit.employee_email : "",
+    employee_department_id: itemEdit ? itemEdit.employee_department_id : "",
   };
 
   const yupSchema = Yup.object({
@@ -61,6 +72,7 @@ const ModalAddEmployees = ({ itemEdit }) => {
       .trim()
       .email("Invalid email.")
       .required("required."),
+    employee_department_id: Yup.string().required("required."),
   });
 
   const handleClose = () => {
@@ -138,6 +150,31 @@ const ModalAddEmployees = ({ itemEdit }) => {
                           name="employee_email"
                           type="email"
                           disabled={mutation.isPending}
+                        />
+                      </div>
+
+                      <div className="relative mb-6">
+                        <label className="block mb-2">Department</label>
+                        <Field
+                          as="select"
+                          name="employee_department_id"
+                          className="input-main"
+                          disabled={mutation.isPending}
+                        >
+                          <option value="">Select department</option>
+                          {departmentData?.data?.map((item) => (
+                            <option
+                              key={item.department_aid}
+                              value={item.department_aid}
+                            >
+                              {item.department_name}
+                            </option>
+                          ))}
+                        </Field>
+                        <ErrorMessage
+                          name="employee_department_id"
+                          component="div"
+                          className="text-alert text-xs mt-1"
                         />
                       </div>
 

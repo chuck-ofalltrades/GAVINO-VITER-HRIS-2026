@@ -1,28 +1,31 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
 import { FaArchive, FaEdit, FaTrash, FaTrashRestore } from "react-icons/fa";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { queryDataInfinite } from "../../../functions/custom-hooks/queryDataInfinite";
-import { apiVersion } from "../../../functions/functions-general";
-import Loadmore from "../../../partials/Loadmore";
-import ModalArchive from "../../../partials/modals/ModalArchive";
-import ModalDelete from "../../../partials/modals/ModalDelete";
-import ModalRestore from "../../../partials/modals/ModalRestore";
-import NoData from "../../../partials/NoData";
-import SearchBar from "../../../partials/SearchBar";
-import ServerError from "../../../partials/ServerError";
-import FetchingSpinner from "../../../partials/spinners/FetchingSpinner";
-import Status from "../../../partials/Status";
-import TableLoading from "../../../partials/TableLoading";
+import {
+  apiVersion,
+  formatDate,
+} from "../../../../functions/functions-general";
+import { queryDataInfinite } from "../../../../functions/custom-hooks/queryDataInfinite";
+import FetchingSpinner from "../../../../partials/spinners/FetchingSpinner";
+import Status from "../../../../partials/Status";
+import TableLoading from "../../../../partials/TableLoading";
+import NoData from "../../../../partials/NoData";
+import ServerError from "../../../../partials/ServerError";
+import Loadmore from "../../../../partials/Loadmore";
+import SearchBar from "../../../../partials/SearchBar";
+import ModalArchive from "../../../../partials/modals/ModalArchive";
+import ModalRestore from "../../../../partials/modals/ModalRestore";
+import ModalDelete from "../../../../partials/modals/ModalDelete";
 import {
   setIsAdd,
   setIsArchive,
   setIsDelete,
   setIsRestore,
-} from "../../../store/StoreAction";
-import { StoreContext } from "../../../store/StoreContext";
+} from "../../../../store/StoreAction";
+import { StoreContext } from "../../../../store/StoreContext";
 
-const EmployeesList = ({ itemEdit, setItemEdit }) => {
+const DepartmentList = ({ itemEdit, setItemEdit }) => {
   const { store, dispatch } = React.useContext(StoreContext);
 
   const [page, setPage] = React.useState(1);
@@ -41,11 +44,11 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["employees", search.current.value, store.isSearch, filterData],
+    queryKey: ["department", search.current.value, store.isSearch, filterData],
     queryFn: async ({ pageParam = 1 }) =>
       await queryDataInfinite(
         "",
-        `${apiVersion}/controllers/developers/employees/page.php?start=${pageParam}`,
+        `${apiVersion}/controllers/developers/settings/department/page.php?start=${pageParam}`,
         false,
         {
           filterData,
@@ -86,20 +89,22 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
   };
 
   React.useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+    if (inView) {
       setPage((prev) => prev + 1);
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [inView]);
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="py-5 flex items-center justify-between">
         <div className="relative">
           <label htmlFor="">Status</label>
           <select
-            onChange={(e) => setFilterData(e.target.value)}
+            name="status"
+            id=""
             value={filterData}
+            onChange={(e) => setFilterData(e.target.value)}
           >
             <option value="">All</option>
             <option value="1">Active</option>
@@ -118,7 +123,7 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
         />
       </div>
 
-      <div className="relative pt-4 rounded-md">
+      <div className="relative">
         {status !== "pending" && isFetching && <FetchingSpinner />}
 
         <table>
@@ -126,19 +131,19 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
             <tr>
               <th>#</th>
               <th>Status</th>
-              <th>Employee Name</th>
-              <th>Email</th>
               <th>Department</th>
+              <th>Created</th>
+              <th>Date update</th>
               <th></th>
             </tr>
           </thead>
 
           <tbody>
             {!error &&
-              (status === "pending" || result?.pages[0]?.count === 0) && (
+              (status == "pending" || result?.pages[0]?.count == 0) && (
                 <tr>
                   <td colSpan="100%" className="p-10">
-                    {status === "pending" ? (
+                    {status == "pending" ? (
                       <TableLoading cols={2} count={20} />
                     ) : (
                       <NoData />
@@ -155,34 +160,27 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
               </tr>
             )}
 
-            {result?.pages?.map((page, pageIndex) => (
-              <React.Fragment key={pageIndex}>
-                {page?.data?.map((item, itemIndex) => {
+            {result?.pages.map((pages, key) => (
+              <React.Fragment key={key}>
+                {pages?.data.map((item, key) => {
                   return (
-                    <tr key={`${item.employee_aid}-${itemIndex}`}>
+                    <tr key={key}>
                       <td>{counter++}</td>
                       <td>
                         <Status
-                          text={`${
-                            item.employee_is_active == 1 ? "active" : "inactive"
-                          }`}
+                          text={
+                            item.department_is_active == 1
+                              ? "active"
+                              : "inactive"
+                          }
                         />
                       </td>
-                      <td>
-                        {[
-                          item.employee_last_name,
-                          item.employee_first_name,
-                          item.employee_middle_name,
-                        ]
-                          .filter(Boolean)
-                          .join(", ")
-                          .replace(/, ([^,]+)$/, ", $1")}
-                      </td>
-                      <td>{item.employee_email}</td>
                       <td>{item.department_name}</td>
+                      <td>{formatDate(item.department_created)}</td>
+                      <td>{formatDate(item.department_updated)}</td>
                       <td>
-                        <div className="flex items-center gap-3">
-                          {item.employee_is_active == 1 ? (
+                        <div className="flex gap-2">
+                          {item.department_is_active == 1 ? (
                             <>
                               <button
                                 type="button"
@@ -245,58 +243,40 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
         </div>
       </div>
 
-      {store.isArchive && itemEdit && (
+      {store.isArchive && (
         <ModalArchive
-          mysqlApiArchive={`${apiVersion}/controllers/developers/employees/active.php?id=${itemEdit.employee_aid}`}
+          mysqlApiArchive={`${apiVersion}/controllers/developers/settings/department/active.php?id=${itemEdit.department_aid}`}
           msg="Are you sure you want to archive this record?"
-          successMsg="Successfully archived."
-          item={[
-            itemEdit.employee_first_name,
-            itemEdit.employee_middle_name,
-            itemEdit.employee_last_name,
-          ]
-            .filter(Boolean)
-            .join(" ")}
+          successMsg="Successfully Archived."
+          item={itemEdit.department_name}
           dataItem={itemEdit}
-          queryKey="employees"
+          queryKey="department"
         />
       )}
 
-      {store.isRestore && itemEdit && (
+      {store.isRestore && (
         <ModalRestore
-          mysqlApiRestore={`${apiVersion}/controllers/developers/employees/active.php?id=${itemEdit.employee_aid}`}
+          mysqlApiRestore={`${apiVersion}/controllers/developers/settings/department/active.php?id=${itemEdit.department_aid}`}
           msg="Are you sure you want to restore this record?"
-          successMsg="Successfully restored."
-          item={[
-            itemEdit.employee_first_name,
-            itemEdit.employee_middle_name,
-            itemEdit.employee_last_name,
-          ]
-            .filter(Boolean)
-            .join(" ")}
+          successMsg="Successfully Restored."
+          item={itemEdit.department_name}
           dataItem={itemEdit}
-          queryKey="employees"
+          queryKey="department"
         />
       )}
 
-      {store.isDelete && itemEdit && (
+      {store.isDelete && (
         <ModalDelete
-          mysqlApiDelete={`${apiVersion}/controllers/developers/employees/employees.php?id=${itemEdit.employee_aid}`}
+          mysqlApiDelete={`${apiVersion}/controllers/developers/settings/department/department.php?id=${itemEdit.department_aid}`}
           msg="Are you sure you want to delete this record?"
-          successMsg="Successfully deleted."
-          item={[
-            itemEdit.employee_first_name,
-            itemEdit.employee_middle_name,
-            itemEdit.employee_last_name,
-          ]
-            .filter(Boolean)
-            .join(" ")}
+          successMsg="Successfully Deleted."
+          item={itemEdit.department_name}
           dataItem={itemEdit}
-          queryKey="employees"
+          queryKey="department"
         />
       )}
     </>
   );
 };
 
-export default EmployeesList;
+export default DepartmentList;
