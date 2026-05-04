@@ -31,6 +31,7 @@ CREATE TABLE `settings_roles` (
   `role_aid` int(11) NOT NULL,
   `role_is_active` tinyint(1) NOT NULL,
   `role_name` varchar(128) NOT NULL,
+  `role_code` varchar(50) NOT NULL,
   `role_description` text NOT NULL,
   `role_created` datetime NOT NULL,
   `role_updated` datetime NOT NULL
@@ -40,7 +41,7 @@ CREATE TABLE `settings_roles` (
 -- Dumping data for table `settings_roles`
 --
 
-INSERT INTO `settings_roles` (`role_aid`, `role_is_active`, `role_name`, `role_description`, `role_created`, `role_updated`) VALUES
+INSERT INTO `settings_roles` (`role_aid`, `role_is_active`, `role_name`, `role_code`, `role_description`, `role_created`, `role_updated`) VALUES
 (12, 1, 'Juan Dela Cruz', 'ahahahahhaha', '2026-04-16 10:37:21', '2026-04-16 10:37:21'),
 (13, 1, 'developer', 'developer', '2026-04-16 10:37:51', '2026-04-16 10:37:51'),
 (15, 1, 'developer1', 'admin', '2026-04-16 12:33:09', '2026-04-16 12:39:34');
