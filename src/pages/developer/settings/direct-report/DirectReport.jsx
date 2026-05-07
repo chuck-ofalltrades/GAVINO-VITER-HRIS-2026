@@ -127,7 +127,6 @@ const DirectReport = () => {
         <div className="relative pt-4 rounded-md">
           {status !== "pending" && isFetching && <FetchingSpinner />}
 
-          {/* Standard table without manual tailwind classes */}
           <table>
             <thead>
               <tr>
@@ -229,9 +228,10 @@ const DirectReport = () => {
 
       {store.isAdd && <ModalAddDirectReport itemEdit={itemEdit} />}
 
+      {/* FIXED: The ModalDelete API endpoint now points to delete.php */}
       {store.isDelete && itemEdit && (
         <ModalDelete
-          mysqlApiDelete={`${apiVersion}/controllers/developers/settings/direct-report/direct-report.php?id=${itemEdit.direct_report_aid}`}
+          mysqlApiDelete={`${apiVersion}/controllers/developers/settings/direct-report/delete.php?id=${itemEdit.direct_report_aid}`}
           msg="Are you sure you want to delete this record?"
           successMsg="Successfully deleted."
           item={`${itemEdit.sub_lname}, ${itemEdit.sub_fname}`}

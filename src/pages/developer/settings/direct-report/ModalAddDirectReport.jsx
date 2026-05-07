@@ -32,8 +32,8 @@ const ModalAddDirectReport = ({ itemEdit }) => {
     mutationFn: (values) =>
       queryData(
         itemEdit
-          ? `${apiVersion}/controllers/developers/settings/direct-report/direct-report.php?id=${itemEdit.direct_report_aid}`
-          : `${apiVersion}/controllers/developers/settings/direct-report/direct-report.php`,
+          ? `${apiVersion}/controllers/developers/settings/direct-report/update.php?id=${itemEdit.direct_report_aid}`
+          : `${apiVersion}/controllers/developers/settings/direct-report/create.php`,
         itemEdit ? "put" : "post",
         values,
       ),
@@ -90,7 +90,7 @@ const ModalAddDirectReport = ({ itemEdit }) => {
         className="transition-all ease-in-out transform duration-200"
       >
         <div className="modal-header relative mb-4">
-          <h3 className="text-dark text-sm">
+          <h3 className="text-dark text-sm font-bold">
             {itemEdit ? "Update" : "Add"} Direct Report
           </h3>
           <button
