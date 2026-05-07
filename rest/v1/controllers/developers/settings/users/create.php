@@ -1,7 +1,7 @@
 <?php
 
-// import notification
 require '../../../../notifications/verify-account.php';
+
 // check database connection
 $conn = null;
 $conn = checkDbConnection();
@@ -26,13 +26,20 @@ $emailSendCount = 0;
 $query = checkCreate($val);
 
 if($query->rowCount() > 0){
-    $sendEmail = sendEmail(
-        $password_link,
-        $val->users_first_name,
-        $val->users_email,
-        $val->users_key
-    );
-    if($sendEmail['mail_success']) $emailSendCount++;
+    // Wrap the mailer in a try-catch so local SMTP failures don't crash the API
+    try {
+        $sendEmail = sendEmail(
+            $password_link,
+            $val->users_first_name,
+            $val->users_email,
+            $val->users_key
+        );
+        if($sendEmail['mail_success']) $emailSendCount++;
+    } catch (Exception $e) {
+        // Gracefully handle local mailer errors without returning a 500 error
+        error_log("Mail failed to send locally: " . $e->getMessage());
+    }
 }
+
 http_response_code(200);
 returnSuccess($val, "Users Create", $query, $emailSendCount);

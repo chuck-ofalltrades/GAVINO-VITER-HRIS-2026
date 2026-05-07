@@ -7,6 +7,8 @@ class Employees {
     public $employee_middle_name;
     public $employee_last_name;
     public $employee_email;
+    public $employee_start_work_date; // ADDED
+    public $employee_birthday;        // ADDED
     public $employee_created;
     public $employee_updated;
     public $employee_department_id;
@@ -36,6 +38,8 @@ class Employees {
             $sql .= "employee_middle_name, ";
             $sql .= "employee_last_name, ";
             $sql .= "employee_email, ";
+            $sql .= "employee_start_work_date, "; // ADDED
+            $sql .= "employee_birthday, ";        // ADDED
             $sql .= "employee_department_id, ";
             $sql .= "employee_created, ";
             $sql .= "employee_updated ";
@@ -45,6 +49,8 @@ class Employees {
             $sql .= ":employee_middle_name, ";
             $sql .= ":employee_last_name, ";
             $sql .= ":employee_email, ";
+            $sql .= ":employee_start_work_date, "; // ADDED
+            $sql .= ":employee_birthday, ";        // ADDED
             $sql .= ":employee_department_id, ";
             $sql .= ":employee_created, ";
             $sql .= ":employee_updated ";
@@ -57,6 +63,8 @@ class Employees {
                 "employee_middle_name" => $this->employee_middle_name,
                 "employee_last_name" => $this->employee_last_name,
                 "employee_email" => $this->employee_email,
+                "employee_start_work_date" => $this->employee_start_work_date, // ADDED
+                "employee_birthday" => $this->employee_birthday,               // ADDED
                 "employee_department_id" => $this->employee_department_id,
                 "employee_created" => $this->employee_created,
                 "employee_updated" => $this->employee_updated,
@@ -155,6 +163,8 @@ class Employees {
             $sql .= "employee_middle_name = :employee_middle_name, ";
             $sql .= "employee_last_name = :employee_last_name, ";
             $sql .= "employee_email = :employee_email, ";
+            $sql .= "employee_start_work_date = :employee_start_work_date, "; // ADDED
+            $sql .= "employee_birthday = :employee_birthday, ";               // ADDED
             $sql .= "employee_department_id = :employee_department_id, ";
             $sql .= "employee_updated = :employee_updated ";
             $sql .= "where employee_aid = :employee_aid ";
@@ -165,6 +175,8 @@ class Employees {
                 "employee_middle_name" => $this->employee_middle_name,
                 "employee_last_name" => $this->employee_last_name,
                 "employee_email" => $this->employee_email,
+                "employee_start_work_date" => $this->employee_start_work_date, // ADDED
+                "employee_birthday" => $this->employee_birthday,               // ADDED
                 "employee_department_id" => $this->employee_department_id,
                 "employee_updated" => $this->employee_updated,
                 "employee_aid" => $this->employee_aid,

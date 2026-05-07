@@ -1,0 +1,53 @@
+================================================================
+SECTION 1: MEMO MODULE (To populate "Announcement" section)
+================================================================
+
+--- MEMO 1 ---
+From: HR Department
+To: All Employees
+Date: 2026-05-06
+Category: Security
+Memo (Text): Please be reminded that wearing of company IDs is mandatory while inside the office premises.
+
+--- MEMO 2 ---
+From: Admin Office
+To: All Staff
+Date: 2026-05-05
+Category: Event
+Memo (Text): We will have a general cleaning this coming Friday. Please secure all personal belongings.
+
+--- MEMO 3 ---
+From: Management
+To: Sales Team
+Date: 2026-05-04
+Category: Incentive
+Memo (Text): New referral bonuses are now active! Check the settings module for the full breakdown of rates.
+
+
+================================================================
+SECTION 2: EMPLOYEES (To populate Celebrations & New Hires)
+================================================================
+
+--- TEST: BIRTHDAY TODAY (May 6) ---
+First Name: Andres
+Last Name: Bonifacio
+Email: a.bonifacio@example.com
+Start Work Date: 2024-02-12
+Birthday: 1992-05-06        <-- (Celebration: Birthday Today)
+Department: IT Department
+
+--- TEST: WORK ANNIVERSARY THIS MONTH ---
+First Name: Melchora
+Last Name: Aquino
+Email: m.aquino@example.com
+Start Work Date: 2023-05-10  <-- (Celebration: Anniversary this month)
+Birthday: 1985-01-06
+Department: HR Department
+
+--- TEST: NEW HIRE THIS MONTH ---
+First Name: Apolinario
+Last Name: Mabini
+Email: a.mabini@example.com
+Start Work Date: 2026-05-04  <-- (New Employee: Started this month)
+Birthday: 1994-07-23
+Department: Marketing

@@ -62,6 +62,9 @@ const ModalAddEmployees = ({ itemEdit }) => {
     employee_last_name: itemEdit ? itemEdit.employee_last_name : "",
     employee_email: itemEdit ? itemEdit.employee_email : "",
     employee_department_id: itemEdit ? itemEdit.employee_department_id : "",
+    // NEW FIELDS ADDED HERE:
+    employee_start_work_date: itemEdit ? itemEdit.employee_start_work_date : "",
+    employee_birthday: itemEdit ? itemEdit.employee_birthday : "",
   };
 
   const yupSchema = Yup.object({
@@ -73,6 +76,9 @@ const ModalAddEmployees = ({ itemEdit }) => {
       .email("Invalid email.")
       .required("required."),
     employee_department_id: Yup.string().required("required."),
+    // NEW VALIDATIONS ADDED HERE:
+    employee_start_work_date: Yup.date().required("required."),
+    employee_birthday: Yup.date().required("required."),
   });
 
   const handleClose = () => {
@@ -149,6 +155,25 @@ const ModalAddEmployees = ({ itemEdit }) => {
                           label="Email"
                           name="employee_email"
                           type="email"
+                          disabled={mutation.isPending}
+                        />
+                      </div>
+
+                      {/* NEW DATE INPUTS ADDED HERE */}
+                      <div className="relative mb-6">
+                        <InputText
+                          label="Start Work Date"
+                          name="employee_start_work_date"
+                          type="date"
+                          disabled={mutation.isPending}
+                        />
+                      </div>
+
+                      <div className="relative mb-6">
+                        <InputText
+                          label="Birthday"
+                          name="employee_birthday"
+                          type="date"
                           disabled={mutation.isPending}
                         />
                       </div>

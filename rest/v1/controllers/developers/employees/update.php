@@ -13,6 +13,8 @@ if (array_key_exists("id", $_GET)) {
     $val->employee_last_name = trim($data['employee_last_name']);
     $val->employee_email = trim($data['employee_email']);
     $val->employee_department_id = trim($data['employee_department_id']);
+    $val->employee_start_work_date = trim($data['employee_start_work_date']); // ADDED
+    $val->employee_birthday = trim($data['employee_birthday']);               // ADDED
     $val->employee_updated = date("Y-m-d H:i:s");
 
     // validation

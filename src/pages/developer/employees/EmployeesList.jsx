@@ -129,6 +129,8 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
               <th>Employee Name</th>
               <th>Email</th>
               <th>Department</th>
+              {/* FIXED: Added Supervisor Header */}
+              <th>Supervisor</th>
               <th></th>
             </tr>
           </thead>
@@ -180,6 +182,21 @@ const EmployeesList = ({ itemEdit, setItemEdit }) => {
                       </td>
                       <td>{item.employee_email}</td>
                       <td>{item.department_name}</td>
+
+                      {/* FIXED: Added Supervisor Data Cell logic */}
+                      <td>
+                        {item.employee_supervisor_last_name ? (
+                          <span className="text-gray-700">
+                            {item.employee_supervisor_last_name},{" "}
+                            {item.employee_supervisor_first_name}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 opacity-50 text-[11px] italic">
+                            No supervisor
+                          </span>
+                        )}
+                      </td>
+
                       <td>
                         <div className="flex items-center gap-3">
                           {item.employee_is_active == 1 ? (

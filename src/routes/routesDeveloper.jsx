@@ -6,6 +6,8 @@ import Department from "../pages/developer/settings/department/Department";
 import Notification from "../pages/developer/settings/notification/Notification";
 import Roles from "../pages/developer/settings/roles/Roles";
 import Users from "../pages/developer/settings/users/Users";
+// ADDED IMPORT HERE:
+import DirectReport from "../pages/developer/settings/direct-report/DirectReport";
 
 export const routesDeveloper = [
   {
@@ -61,6 +63,15 @@ export const routesDeveloper = [
     element: (
       <>
         <Notification />
+      </>
+    ),
+  },
+  // ADDED ROUTE HERE:
+  {
+    path: `${devNavUrl}/${urlDeveloper}/settings/direct-report`,
+    element: (
+      <>
+        <DirectReport />
       </>
     ),
   },
