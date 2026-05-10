@@ -1,5 +1,7 @@
 <?php
 
+use \Firebase\JWT\JWT;
+
 require 'Database.php';
 require 'Response.php';
 
@@ -25,6 +27,41 @@ function checkDbConnection() {
         $response->setData($error);
         $response->send();
         exit;
+    }
+}
+
+function checkLogin($object){
+    $response = new Response();
+    $query = $object->readLogin();
+    if($query->rowCount() > 0){
+        $response->setSuccess(false);
+        $error['count'] = 0;
+        $error['success'] = false;
+        $error['error'] = "Invalid email or password.";
+        $error['error_type'] = 'invalid_account';
+        $response->setData($error);
+        $response->send();
+        exit;
+    }
+    return $query;
+}
+
+function loginAccess($password, $hash_password, $email, $row, $result, $key){
+    $response = new Response();
+    $error = [];
+    $returnData = [];
+    if(password_verify($password, $hash_password)){
+        try{
+            $payload = array(
+                "iss" => "localhost",
+                "aud" => "tm",
+                "iat" => time(),
+                "data" => array("email"=>$email, "data"=>$row)
+            );
+            $jwt = JWT;
+        }catch(Throwable $e){
+
+        }
     }
 }
 

@@ -79,3 +79,7 @@ export const getUrlParam = (id) => {
   // return param;
   return urlParams;
 };
+
+export const setStorageRoute = (jwt) => {
+  localStorage.setItem('hristoken', JSON.stringify({ token: jwt }));
+};

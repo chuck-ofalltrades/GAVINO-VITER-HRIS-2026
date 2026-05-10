@@ -78,7 +78,7 @@ const Dashboard = () => {
     <Layout menu="dashboard">
       <div className="p-4 bg-gray-50">
         <h1 className="text-lg font-bold mb-6 text-gray-700">
-          Welcome Manalo, Emmanuel!
+          Welcome Gavino, Charles Gabriel!
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
