@@ -1,9 +1,10 @@
 <?php
 
-use \Firebase\JWT\JWT;
-
 require 'Database.php';
 require 'Response.php';
+require_once __DIR__ . '/../lib/jwt/vendor/autoload.php';
+
+use Firebase\JWT\JWT;
 
 function sendResponse($result) {
     $response = new Response();
@@ -46,7 +47,14 @@ function checkLogin($object){
     return $query;
 }
 
-function loginAccess($password, $hash_password, $email, $row, $result, $key){
+function loginAccess(
+    $password,
+    $hash_password,
+    $email,
+    $row,
+    $result,
+    $key
+    ){
     $response = new Response();
     $error = [];
     $returnData = [];
@@ -56,12 +64,35 @@ function loginAccess($password, $hash_password, $email, $row, $result, $key){
                 "iss" => "localhost",
                 "aud" => "tm",
                 "iat" => time(),
-                "data" => array("email"=>$email, "data"=>$row)
+                "data" => array("email"=>$email,"data"=>$row, "user_key"=> $row['users_password'])
             );
-            $jwt = JWT;
+            $jwt = JWT::encode($payload, $key, "HS256");
+        
+            $firstName = $row['users_first_name'];
+            $lastName = $row['users_last_name'];
+            $fNameLetter = mb_substr($firstName, 0, 1);
+            $lNameLetter = mb_substr($lastName, 0, 1);
+            $nickName = "{$fNameLetter}{$lNameLetter}";
+            unset($row['users_password']); // password removed
+            http_response_code(200);
+            $returnData['data'] = [
+                ...(array)$row,
+                ['user_key' => $user_key],
+                ['nickName' => $nickName],
+                ['server_date' => date("Y-m-d")],
+            ];
+            $returnData['count'] = $result->rowCount();
+            $returnData['success'] = true;
+            $returnData['messsage'] = 'Access granted';
+            $returnData['server_datetime'] = date("Y-m-d H:i:s");
+            $response->setData($returnData);
+            $response->send();
+            exit;
         }catch(Throwable $e){
-
+            returnHandleError('Error', "Login Error", $e->getMessage());
         }
+    }else{
+        returnHandleError('Invalid email or password', "Login Error");
     }
 }
 

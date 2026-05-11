@@ -256,16 +256,36 @@ class Users {
     public function checkName() {
         try {
             $sql = "select ";
-            $sql .= "users_email ";
+            $sql .= "users_first_name ";
             $sql .= "from {$this->tblSettingsUsers} ";
-            $sql .= "where users_email = :users_email ";
+            $sql .= "where users_first_name = :users_first_name ";
 
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                "users_first_name" => $this->users_first_name,
+            ]);
+        } catch (PDOException $e) {
+            $query = false;
+        }
+
+        return $query;
+    }
+
+    public function readLogin() {
+        try {
+            $sql = "select ";
+            $sql .= " * ";
+            $sql .= " from {$this->tblSettingsUsers} as user, ";
+            $sql .= " {$this->tblSettingsRoles} as role ";
+            $sql .= " where ";
+            $sql .= " user.users_role_id = role.role_aid ";
+            $sql .= " and user.users_is_active = 1 ";
+            $sql .= " and user.users_email = :users_email ";
             $query = $this->connection->prepare($sql);
             $query->execute([
                 "users_email" => $this->users_email,
             ]);
         } catch (PDOException $e) {
-            returnError($e);
             $query = false;
         }
 
