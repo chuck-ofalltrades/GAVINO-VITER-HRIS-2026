@@ -11,6 +11,10 @@ export const routesAccess = [
     element: <Login />,
   },
   {
+    path: `${devNavUrl}/login`,
+    element: <Login />,
+  },
+  {
     path: `${devNavUrl}/forgot-password`,
     element: <ForgotPassword />,
   },

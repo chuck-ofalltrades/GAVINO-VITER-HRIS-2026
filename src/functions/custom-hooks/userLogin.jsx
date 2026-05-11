@@ -13,12 +13,16 @@ const userLogin = (navigate) => {
   React.useEffect(() => {
     setLoading(true);
     const fetchLogin = async () => {
-      const login = await queryData(`${apiVersion}/other-user/token`, "post", {
-        token: checkLocalStorage().token,
-      });
+      const login = await queryData(
+        `${apiVersion}//controllers/developers/settings/users.token.php`,
+        "post",
+        {
+          token: checkLocalStorage().token,
+        },
+      );
 
       if (typeof login === "undefined" || !login?.success) {
-        localStorage.removeItem("wfstoken");
+        localStorage.removeItem("hristoken");
         setLoading(false);
       } else {
         checkRoleToRedirect(navigate, login.data);

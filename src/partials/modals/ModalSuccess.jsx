@@ -18,16 +18,8 @@ const ModalSuccess = () => {
       // logout when there's a change in your own account
       if (store.isAccountUpdated) {
         setTimeout(() => {
-          localStorage.removeItem("wfstoken");
-          window.location.replace(
-            `${devNavUrl}/${
-              store.credentials.data.role_code === "r_is_developer"
-                ? "developer/login"
-                : store.credentials.data.role_code === "r_is_admin"
-                  ? "login"
-                  : "donor/login"
-            }`,
-          );
+          localStorage.removeItem("hristoken");
+          window.location.replace(`${devNavUrl}/login`);
           dispatch(setIsAccountUpdated(false));
         }, 1000);
         return;

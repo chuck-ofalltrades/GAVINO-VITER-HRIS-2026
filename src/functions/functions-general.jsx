@@ -9,6 +9,7 @@ export const setTimezone = "Asia/Manila";
 
 // roles variable
 export const urlDeveloper = "developer";
+export const urlAdmin = "admin";
 
 // dev api key
 export const devKey = "123devkey";

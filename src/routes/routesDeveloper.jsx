@@ -8,79 +8,80 @@ import Roles from "../pages/developer/settings/roles/Roles";
 import Users from "../pages/developer/settings/users/Users";
 // ADDED IMPORT HERE:
 import DirectReport from "../pages/developer/settings/direct-report/DirectReport";
+import ProtectedRoute from "../pages/access/ProtectedRoute";
 
 export const routesDeveloper = [
   {
     path: `${devNavUrl}/${urlDeveloper}/`,
     element: (
-      <>
+      <ProtectedRoute>
         <Dashboard />
-      </>
+      </ProtectedRoute>
     ),
   },
   {
     path: `${devNavUrl}/${urlDeveloper}/dashboard`,
     element: (
-      <>
+      <ProtectedRoute>
         <Dashboard />
-      </>
+      </ProtectedRoute>
     ),
   },
   {
     path: `${devNavUrl}/${urlDeveloper}/employees`,
     element: (
-      <>
+      <ProtectedRoute>
         <Employees />
-      </>
+      </ProtectedRoute>
     ),
   },
   {
     path: `${devNavUrl}/${urlDeveloper}/settings/roles`,
     element: (
-      <>
+      <ProtectedRoute>
         <Roles />
-      </>
+      </ProtectedRoute>
     ),
   },
   {
     path: `${devNavUrl}/${urlDeveloper}/settings/users`,
     element: (
-      <>
+      <ProtectedRoute>
         <Users />
-      </>
+      </ProtectedRoute>
     ),
   },
   {
     path: `${devNavUrl}/${urlDeveloper}/settings/department`,
     element: (
-      <>
+      <ProtectedRoute>
         <Department />
-      </>
+      </ProtectedRoute>
     ),
   },
   {
     path: `${devNavUrl}/${urlDeveloper}/settings/notification`,
     element: (
-      <>
+      <ProtectedRoute>
         <Notification />
-      </>
+      </ProtectedRoute>
     ),
   },
   // ADDED ROUTE HERE:
   {
     path: `${devNavUrl}/${urlDeveloper}/settings/direct-report`,
     element: (
-      <>
+      <ProtectedRoute>
         <DirectReport />
-      </>
+      </ProtectedRoute>
     ),
   },
   {
     path: `${devNavUrl}/${urlDeveloper}/memo`,
     element: (
-      <>
+      <ProtectedRoute>
         <Memo />
-      </>
+      </ProtectedRoute>
     ),
   },
 ];

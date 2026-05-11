@@ -34,7 +34,7 @@ function checkDbConnection() {
 function checkLogin($object){
     $response = new Response();
     $query = $object->readLogin();
-    if($query->rowCount() > 0){
+    if($query->rowCount() == 0){
         $response->setSuccess(false);
         $error['count'] = 0;
         $error['success'] = false;
@@ -60,26 +60,27 @@ function loginAccess(
     $returnData = [];
     if(password_verify($password, $hash_password)){
         try{
-            $payload = array(
-                "iss" => "localhost",
-                "aud" => "tm",
-                "iat" => time(),
-                "data" => array("email"=>$email,"data"=>$row, "user_key"=> $row['users_password'])
-            );
-            $jwt = JWT::encode($payload, $key, "HS256");
-        
             $firstName = $row['users_first_name'];
             $lastName = $row['users_last_name'];
             $fNameLetter = mb_substr($firstName, 0, 1);
             $lNameLetter = mb_substr($lastName, 0, 1);
             $nickName = "{$fNameLetter}{$lNameLetter}";
+            $payload = array(
+                "iss" => "localhost",
+                "aud" => "tm",
+                "iat" => time(),
+                "data" => array("email"=>$email,"data"=>$row, "user_key"=> $row['users_password'], 'nickName'=> $nickName),
+            );
+            $jwt = JWT::encode($payload, $key, "HS256");
+        
             unset($row['users_password']); // password removed
             http_response_code(200);
             $returnData['data'] = [
                 ...(array)$row,
-                ['user_key' => $user_key],
-                ['nickName' => $nickName],
-                ['server_date' => date("Y-m-d")],
+                // ['user_key' => $user_key],
+                ...['nickName' => $nickName],
+                ...['server_date' => date("Y-m-d")],
+                ...['jwt' => $jwt],
             ];
             $returnData['count'] = $result->rowCount();
             $returnData['success'] = true;
@@ -93,6 +94,46 @@ function loginAccess(
         }
     }else{
         returnHandleError('Invalid email or password', "Login Error");
+    }
+}
+
+function tokenUser($object, $token, $key){
+    $response = new Response();
+    $returnData = [];
+    // if not token exist then validate
+    if(empty($token)) returnHandleError('No token found', 'Invalid credentials');
+    try{
+        $decoded = JWT::decode($token, $key, ['HS256']);
+        $object->users_email = $decoded->data->email;
+        $result = checkLogin($object);
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        if(!isset($decoded->data->data)) throw new Error ('Invalid account');
+        if(!isset($row)) throw new Error ('Invalid account');
+        $datebasePassword = $row['users_password'];
+        $tokenPassword = $decoded->data->data->users_password;
+        $isUserKeyMatched = true;
+        if($datebasePassword != $tokenPassword) throw new Error ('Invalid account');
+
+        http_response_code(200);
+        $returnData['data'] = [
+            ...(array)$row,
+            ...[
+                'user_is_key_matched' => $isUserKeyMatched,
+                'role' => strtolower($decoded->data->data->role_name),
+                'nickName' => strtolower($decoded->data->nickName),
+                'server_date' => date('Y-m-d H:i:s'),
+            ]
+        ];
+        $returnData['count'] = $result->rowCount();
+        $returnData['success'] = true;
+        $returnData['message'] = 'Access granted';
+        $returnData['server_datetime'] = date('Y-m-d H:i:s');
+        $response->setData($returnData);
+        $response->send();
+        exit;        
+
+    }catch(Throwable $e){
+        returnHandleError('Error', 'Login Error', $e->getMessage());
     }
 }
 

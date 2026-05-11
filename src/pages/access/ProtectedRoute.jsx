@@ -1,39 +1,41 @@
 import useQueryData from "../../functions/custom-hooks/useQueryData";
 import { queryData } from "../../functions/custom-hooks/queryData";
-import {
-  apiVersion,
-  devNavUrl,
-  UrlAdmin,
-  UrlDeveloper,
-} from "@/components/helpers/functions-general";
-import PageNotFound from "@/components/partials/PageNotFound";
-import FetchingSpinner from "@/components/partials/spinners/FetchingSpinner";
-import { setCredentials } from "@/store/StoreAction";
-import { StoreContext } from "@/store/StoreContext";
+
+// import PageNotFound from "@/components/partials/PageNotFound";
+// import FetchingSpinner from "@/components/partials/spinners/FetchingSpinner";
+// import { StoreContext } from "@/store/StoreContext";
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { apiVersion, devNavUrl, urlAdmin, urlDeveloper } from "../../functions/functions-general";
+import PageNotFound from "../../partials/PageNotFound";
+import FetchingSpinner from "../../partials/spinners/FetchingSpinner";
+import { setCredentials } from "../../store/StoreAction";
+import { StoreContext } from "../../store/StoreContext";
 
 const ProtectedRoute = ({ children }) => {
   const { store, dispatch } = React.useContext(StoreContext);
   const [loading, setLoading] = React.useState(true);
   const [isAuth, setIsAuth] = React.useState("");
   const [pageStatus, setPageStatus] = React.useState(false);
-  const wfstoken = JSON.parse(localStorage.getItem("wfstoken"));
+  const hristoken = JSON.parse(localStorage.getItem("hristoken"));
   const currentPath =
     location.pathname.split("/")[1] === devNavUrl.replace("/", "")
       ? location.pathname.split("/")[2]
       : location.pathname.split("/")[1];
-  const isRolePath = location.pathname.split("/")[2] == UrlAdmin;
+  const isRolePath = location.pathname.split("/")[2] == urlAdmin;
 
   React.useEffect(() => {
     const fetchLogin = async () => {
-      const login = await queryData(`${apiVersion}/other-user/token`, "post", {
-        token: wfstoken.token,
-      });
+      const login = await queryData(
+        `${apiVersion}/controllers/developers/settings/users/token.php`,
+        "post",
+        {
+        token: hristoken.token,
+       },
+      );
 
       const isUserKeyMatched =
-        login?.success == true &&
-        login.data.user_key === login.data.user_other_password;
+        login?.success == true && login.data.user_is_key_matched;
       // check if the password from database is matched
       // to the password used to login
       // if not, logout the user
@@ -41,7 +43,7 @@ const ProtectedRoute = ({ children }) => {
       if (isUserKeyMatched === false) {
         setLoading(false);
         setIsAuth("456");
-        localStorage.removeItem("wfstoken");
+        localStorage.removeItem("hristoken");
         return;
       }
 
@@ -52,8 +54,6 @@ const ProtectedRoute = ({ children }) => {
         dispatch(
           setCredentials({
             ...login.data,
-            nickName:
-              login.data.user_other_fname[0] + login.data.user_other_lname[0],
           }),
         );
         setIsAuth("123");
@@ -72,8 +72,8 @@ const ProtectedRoute = ({ children }) => {
         // currentPath !== login.data.role.toLowerCase() ||
         (login.data.role_code != "r_is_donor" && // CHECK ALL ROLE AND LIMIT PAGE TO ONLY ROLE
           currentPath !== "" &&
-          (currentPath.toLowerCase() === UrlDeveloper.toLowerCase() ||
-            currentPath.toLowerCase() === UrlAdmin.toLowerCase()) &&
+          (currentPath.toLowerCase() === urlDeveloper.toLowerCase() ||
+            currentPath.toLowerCase() === urlAdmin.toLowerCase()) &&
           currentPath !== login.data.role.toLowerCase())
       ) {
         setPageStatus(true);
@@ -95,13 +95,13 @@ const ProtectedRoute = ({ children }) => {
       }
     };
 
-    if (wfstoken !== null) {
+    if (hristoken !== null) {
       setLoading(true);
       fetchLogin();
     } else {
       setIsAuth("456");
       setLoading(false);
-      localStorage.removeItem("wfstoken");
+      localStorage.removeItem("hristoken");
     }
   }, [dispatch]);
 
@@ -114,8 +114,6 @@ const ProtectedRoute = ({ children }) => {
           <FetchingSpinner />
         ) : isAuth === "123" ? (
           children
-        ) : currentPath.toLowerCase() === "donor" ? (
-          <Navigate to={`${devNavUrl}/donor/login`} />
         ) : (
           <Navigate to={`${devNavUrl}/login`} />
         )}

@@ -7,7 +7,11 @@ import { InputText } from "../../components/form-input/FormInputs";
 import { queryData } from "../../functions/custom-hooks/queryData";
 import { apiVersion, devNavUrl } from "../../functions/functions-general";
 import ButtonSpinner from "../../partials/spinners/ButtonSpinner";
-import { setError, setForgotPassSuccess, setMessage } from "../../store/StoreAction";
+import {
+  setError,
+  setForgotPassSuccess,
+  setMessage,
+} from "../../store/StoreAction";
 import { StoreContext } from "../../store/StoreContext";
 
 const ForgotPassword = () => {
@@ -17,7 +21,11 @@ const ForgotPassword = () => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (values) =>
-      queryData(`${apiVersion}/other-user/reset`, "post", values),
+      queryData(
+        `${apiVersion}/controllers/developers/settings/users/reset-password.php`,
+        "post",
+        values,
+      ),
     onSuccess: (data) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["other"] });
@@ -103,13 +111,6 @@ const ForgotPassword = () => {
                             <br />
                             <br /> In case you forgot your account,
                             <br /> please contact{" "}
-                            <a
-                              href="mailto:duane@worldfocusinc.com"
-                              className="text-primary"
-                            >
-                              Duane Masters <br />
-                              duane@worldfocusinc.com
-                            </a>
                           </p>
                         </div>
                       )}

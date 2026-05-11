@@ -8,11 +8,22 @@ import * as Yup from "yup";
 import { InputText } from "../../components/form-input/FormInputs";
 import { queryData } from "../../functions/custom-hooks/queryData";
 import userLogin from "../../functions/custom-hooks/userLogin";
-import { apiVersion, devNavUrl, setStorageRoute } from "../../functions/functions-general";
+import {
+  apiVersion,
+  devNavUrl,
+  setStorageRoute,
+} from "../../functions/functions-general";
 import ButtonSpinner from "../../partials/spinners/ButtonSpinner";
 import FetchingSpinner from "../../partials/spinners/FetchingSpinner";
-import { setCredentials, setError, setIsLogin, setMessage, setSuccess } from "../../store/StoreAction";
+import {
+  setCredentials,
+  setError,
+  setIsLogin,
+  setMessage,
+  setSuccess,
+} from "../../store/StoreAction";
 import { StoreContext } from "../../store/StoreContext";
+import { checkRoleToRedirect } from "../../functions/login-functions";
 
 const Login = () => {
   const { store, dispatch } = React.useContext(StoreContext);
@@ -23,7 +34,11 @@ const Login = () => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (values) =>
-      queryData(`${apiVersion}/controllers/developers/settings/users/login.php`, "post", values),
+      queryData(
+        `${apiVersion}/controllers/developers/settings/users/login.php`,
+        "post",
+        values,
+      ),
     onSuccess: (data) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["other"] });
@@ -34,17 +49,17 @@ const Login = () => {
         dispatch(setMessage(data.error));
       } else {
         if (store.isLogin) {
-          delete data.data[0].user_other_password;
-          delete data.data[0].role_description;
-          delete data.data[0].role_created;
-          delete data.data[0].role_datetime;
-
+          delete data.data.users_password;
+          delete data.data.role_description;
+          delete data.data.role_created;
+          delete data.data.role_datetime;
+          console.log(data);
           dispatch(setError(false));
           dispatch(setMessage(""));
-          dispatch(setCredentials(data.data[0]));
-          setStorageRoute(data.data[1]);
+          dispatch(setCredentials(data.data));
+          setStorageRoute(data.data.jwt);
           dispatch(setIsLogin(false));
-          checkRoleToRedirect(navigate, data.data[0]);
+          checkRoleToRedirect(navigate, data.data);
         }
       }
     },
@@ -88,7 +103,7 @@ const Login = () => {
             </div>
 
             <p className="mt-8 mb-5 text-lg font-bold uppercase text-center">
-              Admin LOGIN
+              LOGIN
             </p>
             <Formik
               initialValues={initVal}

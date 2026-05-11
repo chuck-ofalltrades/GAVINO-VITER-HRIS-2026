@@ -157,25 +157,40 @@ class Users {
         try {
             $sql = "update {$this->tblSettingsUsers} set ";
             $sql .= "users_first_name = :users_first_name, ";
-            $sql .= "users_last_name = :users_last_name, ";
-            $sql .= "users_email = :users_email, ";
-            $sql .= "users_role_id = :users_role_id, ";
+            $sql .= "users_password = :users_password, ";
             $sql .= "users_updated = :users_updated ";
             $sql .= "where users_aid = :users_aid";
-
             $query = $this->connection->prepare($sql);
             $query->execute([
                 "users_first_name" => $this->users_first_name,
-                "users_last_name" => $this->users_last_name,
-                "users_email" => $this->users_email,
-                "users_role_id" => $this->users_role_id,
+                "users_password" => $this->users_password,
                 "users_updated" => $this->users_updated,
                 "users_aid" => $this->users_aid
             ]);
         } catch (PDOException $e) {
-            returnError($e);
             $query = false;
         }
+
+        return $query;
+    }
+
+    public function resetPassword() {
+        try {
+            $sql = "update {$this->tblSettingsUsers} set ";
+            $sql .= "users_key = :users_key, ";
+            $sql .= "users_updated = :users_updated ";
+            $sql .= "where users_email = :users_email ";
+            $query = $this->connection->prepare($sql);
+            $query->execute([
+                "users_key" => $this->users_key,
+                "users_updated" => $this->users_updated,
+                "users_email" => $this->users_email,
+            ]);
+        } catch (PDOException $e) {
+            $query = false;
+            returnError($e);
+        }
+        
 
         return $query;
     }
