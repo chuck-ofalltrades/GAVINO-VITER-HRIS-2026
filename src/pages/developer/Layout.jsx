@@ -4,25 +4,25 @@ import Navigation from "../../partials/Navigation";
 import ModalSuccess from "../../partials/modals/ModalSuccess";
 import { StoreContext } from "../../store/StoreContext";
 import { navList } from "../nav-functions";
+import { navAdminList } from "../nav-admin-functions"; // Added Import
 
 const Layout = ({ children, menu, submenu }) => {
-  const { store, dispatch } = React.useContext(StoreContext);
+  const { store } = React.useContext(StoreContext);
+
+  // Switch navigation logic based on session role
+  const role = store?.credentials?.role_name?.toLowerCase();
+  const currentNavList = role === "admin" ? navAdminList : navList;
 
   return (
     <>
-      {/* HEADER */}
       <Header />
-
-      {/* NAVIGATION */}
-      <Navigation menu={menu} submenu={submenu} navigationList={navList} />
-
-      {/* BODY */}
+      <Navigation
+        menu={menu}
+        submenu={submenu}
+        navigationList={currentNavList}
+      />
       <div className="wrapper">{children}</div>
-
-      {/* FOOTER */}
-
-      {/* MODAL SUCCESS */}
-      {store.success && <ModalSuccess />}
+      {store?.success && <ModalSuccess />}
     </>
   );
 };

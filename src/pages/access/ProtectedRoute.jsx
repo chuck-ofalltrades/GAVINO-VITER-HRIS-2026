@@ -1,12 +1,12 @@
-import useQueryData from "../../functions/custom-hooks/useQueryData";
-import { queryData } from "../../functions/custom-hooks/queryData";
-
-// import PageNotFound from "@/components/partials/PageNotFound";
-// import FetchingSpinner from "@/components/partials/spinners/FetchingSpinner";
-// import { StoreContext } from "@/store/StoreContext";
 import React from "react";
-import { Navigate } from "react-router-dom";
-import { apiVersion, devNavUrl, urlAdmin, urlDeveloper } from "../../functions/functions-general";
+import { Navigate, useLocation } from "react-router-dom";
+import { queryData } from "../../functions/custom-hooks/queryData";
+import {
+  apiVersion,
+  devNavUrl,
+  urlAdmin,
+  urlDeveloper,
+} from "../../functions/functions-general";
 import PageNotFound from "../../partials/PageNotFound";
 import FetchingSpinner from "../../partials/spinners/FetchingSpinner";
 import { setCredentials } from "../../store/StoreAction";
@@ -17,12 +17,16 @@ const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = React.useState(true);
   const [isAuth, setIsAuth] = React.useState("");
   const [pageStatus, setPageStatus] = React.useState(false);
+
+  // FIXED: Using React Router's useLocation instead of the raw window object
+  const location = useLocation();
   const hristoken = JSON.parse(localStorage.getItem("hristoken"));
+
+  // Safely extract the current base path (admin or developer)
   const currentPath =
     location.pathname.split("/")[1] === devNavUrl.replace("/", "")
       ? location.pathname.split("/")[2]
       : location.pathname.split("/")[1];
-  const isRolePath = location.pathname.split("/")[2] == urlAdmin;
 
   React.useEffect(() => {
     const fetchLogin = async () => {
@@ -30,16 +34,14 @@ const ProtectedRoute = ({ children }) => {
         `${apiVersion}/controllers/developers/settings/users/token.php`,
         "post",
         {
-        token: hristoken.token,
-       },
+          token: hristoken?.token,
+        },
       );
 
       const isUserKeyMatched =
-        login?.success == true && login.data.user_is_key_matched;
-      // check if the password from database is matched
-      // to the password used to login
-      // if not, logout the user
+        login?.success === true && login?.data?.user_is_key_matched;
 
+      // check if the password from database is matched to the password used to login
       if (isUserKeyMatched === false) {
         setLoading(false);
         setIsAuth("456");
@@ -47,7 +49,7 @@ const ProtectedRoute = ({ children }) => {
         return;
       }
 
-      if (typeof login == "undefined" || !login.success) {
+      if (typeof login === "undefined" || !login.success) {
         setIsAuth("456");
         setLoading(false);
       } else {
@@ -58,39 +60,28 @@ const ProtectedRoute = ({ children }) => {
         );
         setIsAuth("123");
         setLoading(false);
+        // Clean up sensitive data before putting it in the store
         delete login.data.user_other_password;
         delete login.data.user_key;
         delete login.data.role_description;
         delete login.data.role_created;
         delete login.data.role_datetime;
-        console.log(login);
       }
 
-      if (
-        !login.success ||
-        login.data.role.toLowerCase() !== login.data.role_name.toLowerCase() ||
-        // currentPath !== login.data.role.toLowerCase() ||
-        (login.data.role_code != "r_is_donor" && // CHECK ALL ROLE AND LIMIT PAGE TO ONLY ROLE
-          currentPath !== "" &&
+      // FIXED SECURITY CHECKS: Cleaner URL verification
+      if (login?.success) {
+        const roleName = login.data.role_name.toLowerCase(); // e.g., "admin" or "developer"
+
+        // Block access if a Developer tries to go to Admin URLs, or vice versa
+        if (
+          currentPath &&
           (currentPath.toLowerCase() === urlDeveloper.toLowerCase() ||
             currentPath.toLowerCase() === urlAdmin.toLowerCase()) &&
-          currentPath !== login.data.role.toLowerCase())
-      ) {
-        setPageStatus(true);
-      }
-      if (
-        isRolePath &&
-        (!login.success ||
-          login.data.role.toLowerCase() !== login.data.role_name.toLowerCase())
-      ) {
-        setPageStatus(true);
-      }
-      if (
-        isRolePath &&
-        !location.pathname.includes(
-          login.data.role.toLowerCase().replaceAll(" ", "-"),
-        )
-      ) {
+          currentPath.toLowerCase() !== roleName
+        ) {
+          setPageStatus(true);
+        }
+      } else {
         setPageStatus(true);
       }
     };
@@ -103,7 +94,7 @@ const ProtectedRoute = ({ children }) => {
       setLoading(false);
       localStorage.removeItem("hristoken");
     }
-  }, [dispatch]);
+  }, [dispatch, currentPath, hristoken?.token]);
 
   if (pageStatus) {
     return <PageNotFound />;
